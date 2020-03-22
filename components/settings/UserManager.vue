@@ -2,14 +2,14 @@
   <section>
     <div class="serManagement">
       <section class="newUser">
-        <a-divider class="dividerUserList" orientation="left"><h2>Benutzer</h2></a-divider>
+        <a-divider class="dividerUserList" orientation="left"><h2>Users</h2></a-divider>
         <section class="newUserData">
 
           <!-- General Data - Login -->
           <div class="genData">
             <a-divider orientation="left"><h3>Login</h3></a-divider>
             <a-input
-              placeholder="Benutzername"
+              placeholder="Username"
               v-model="newUser.username"
               class="withGap">
             <a-icon
@@ -18,7 +18,7 @@
             </a-input>
 
             <a-input
-              placeholder="Passwort"
+              placeholder="Password"
               v-model="newUser.password"
               class="withGap">
               <a-icon
@@ -29,33 +29,33 @@
 
           <!-- Personal Data -->
           <div class="persoData">
-            <a-divider orientation="left"><h3>Persönliche Daten</h3></a-divider>
+            <a-divider orientation="left"><h3>Personal data</h3></a-divider>
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
-            placeholder="Vorname"
+            placeholder="First name"
             v-model="newUserData.vorname"/>
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
-            placeholder="Nachname"
+            placeholder="Last name"
             v-model="newUserData.nachname"/>
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
-            placeholder="E-Mail-Adresse"
+            placeholder="Email"
             v-model="newUserData.email"/>
             <a-input
             style:="padding-top: 1em;"
             class="withGap"
-            placeholder="Telefonnummer"
+            placeholder="Telephone number"
             v-model="newUserData.phone"/>
           </div>
         </section>
 
 
         <!-- Role -->
-        <a-divider orientation="left"><h3>Rolle</h3></a-divider>
+        <a-divider orientation="left"><h3>Role</h3></a-divider>
         <div class="roleData">
           <a-radio-group
             style="width:100%;display:flex;flex-wrap:wrap;"
@@ -69,8 +69,8 @@
               </a-radio-button>
               <a-radio-button
                 style="min-width:15em;flex-grow:1;flex-basis:0;"
-                value="Benutzer">
-                <p style="text-align: center;">Benutzer</p>
+                value="User">
+                <p style="text-align: center;">User</p>
               </a-radio-button>
           </a-radio-group><br>
         </div>
@@ -82,7 +82,7 @@
           type="primary"
           @click="addUser"
           class="withGap">
-          Benutzer anlegen
+          Create user
         </a-button>
       </section>
 
@@ -92,10 +92,10 @@
 
       <!-- Userlist  ########################################################################  SECTION -->
       <section class="userList">
-        <a-divider class="dividerUserList" orientation="left"><h2>Benutzer Liste</h2></a-divider>
+        <a-divider class="dividerUserList" orientation="left"><h2>User list</h2></a-divider>
 
         <!-- new Table -->
-        <a-table :columns="usersColumns" :dataSource="users" :locale="{ emptyText: 'Keine Einträge' }" bordered>
+        <a-table :columns="usersColumns" :dataSource="users" :locale="{ emptyText: 'No entries' }" bordered>
           <template
             v-for="col in
             [
@@ -122,12 +122,12 @@
               <a-button @click="cancelUser(record.username)"><a-icon type="close-circle"/></a-button>
             </span>
             <span v-else>
-              <a @click="editUser(record.username)">Bearbeiten</a>
+              <a @click="editUser(record.username)">To edit</a>
             </span>
           </div>
         </template>
         <template slot="password" slot-scope="text, record, index">
-          <a-button @click="newPassword(record._id)">Zurücksetzen</a-button></p>
+          <a-button @click="newPassword(record._id)">Reset to default</a-button></p>
         </template>
         </a-table>
 
@@ -189,7 +189,7 @@ export default {
       // Fetch UserData
       this.usersData = await this.$fetchAllDocs('userdata');
     } catch (err) {
-      this.$message.error(`Fehler beim Laden der Benutzer`);
+      this.$message.error(`Error loading users`);
     }
   },
   methods: {
@@ -223,13 +223,13 @@ export default {
           ...this.doc
         };
         await this.$putDoc(obj, obj._id, obj._rev, 'user');
-        this.$message.success('Benutzerdaten gespeichert!');
+        this.$message.success('User data saved');
         this.users = await this.$fetchAllDocs('user');
         this.userData = await this.$fetchAllDocs('userdata');
         this.userDataEdit = false;
         this.record = null;
       } catch (err) {
-        this.$message.error(`Fehler beim Speichern der Benutzerdaten`);
+        this.$message.error(`Failed to save user data`);
       }
       this.cancel(key);
     },
@@ -280,10 +280,10 @@ export default {
         // Fetch new Data
         this.users = await this.$fetchAllDocs('user')
         this.usersData = await this.$fetchAllDocs('userdata')
-        this.$message.success('Benutzer wurde angelegt')
+        this.$message.success('User was created')
       } catch (err) {
         // console.log(err);
-        this.$message.error(`Fehler beim Anlegen des Benutzers`);
+        this.$message.error(`User creation error`);
       }
     },
 
@@ -300,9 +300,9 @@ export default {
         this.usersData = await this.$fetchAllDocs('userdata')
         // Finish Removing User
         this.record = null;
-        this.$message.success('Benutzer gelöscht!');
+        this.$message.success('User deleted');
       } catch (err) {
-        this.$message.error(`Fehler beim Löschen des Benutzers`);
+        this.$message.error(`Failed to delete user`);
       }
     },
 
@@ -314,12 +314,12 @@ export default {
       const newpw = this.$randomString(4);
       this.$newPassword(user, newpw)
       // Send new Password to its User
-      const text = `Dein neues Passwort: ${newpw}`
+      const text = `Your new password: ${newpw}`
       try {
         let res = await this.$sendMail(userdata.email, 'Passwort Reset', text);
-        this.$message.success('Neues Passwort an Benutzer versendet');
+        this.$message.success('New password sent to user');
       } catch (err) {
-        this.$message.error('Neues Passwort konnte nicht versendet werden')
+        this.$message.error('New password could not be sent')
       }
     }
   },
